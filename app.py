@@ -3,20 +3,18 @@ import mysql.connector
 
 def connect_to_db():
     try:
-        # Hardcoding for a quick demo test - switch back to file read after!
+        with open("db_config.txt", "r") as f:
+            lines = [line.strip() for line in f.readlines() if line.strip()]
+        
         conn = mysql.connector.connect(
             host="127.0.0.1",
-            user="root",
-            password="smu2026",
-            database="SocialMediaDB",
-            unix_socket="/tmp/mysql.sock" # This helps Mac Python find Mac Terminal MySQL
+            user=lines[1],
+            password=lines[2],
+            database=lines[3],
+            # On macOS, using the socket is often required for local terminal connections
+            unix_socket="/tmp/mysql.sock" 
         )
         return conn
     except Exception as e:
-        st.error(f"Try running 'brew services restart mysql' in terminal. Error: {e}")
-        return None
-
-if st.button("Test Connection"):
-    c = connect_to_db()
-    if c:
-        st.success("Connected to Mac Terminal MySQL!")
+        # If the socket above fails, try it without the socket line
+        return mysql.connector.connect(host="127.0.0.1", user=lines[1], password=lines[2], database=lines[3])
