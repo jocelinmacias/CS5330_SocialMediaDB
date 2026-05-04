@@ -3,29 +3,20 @@ import mysql.connector
 
 def connect_to_db():
     try:
-        with open("db_config.txt", "r") as f:
-            lines = [line.strip() for line in f.readlines() if line.strip()]
-        
-        # Ensure we have all 4 required pieces of info
-        if len(lines) < 4:
-            st.error("db_config.txt must have 4 lines: host, user, password, database")
-            return None
-
+        # Hardcoding for a quick demo test - switch back to file read after!
         conn = mysql.connector.connect(
-            host=lines[0],
-            user=lines[1],
-            password=lines[2],
-            database=lines[3],
-            port=3306 # Force standard port
+            host="127.0.0.1",
+            user="root",
+            password="smu2026",
+            database="SocialMediaDB",
+            unix_socket="/tmp/mysql.sock" # This helps Mac Python find Mac Terminal MySQL
         )
         return conn
     except Exception as e:
-        st.error(f"Connection Failed: {e}")
+        st.error(f"Try running 'brew services restart mysql' in terminal. Error: {e}")
         return None
 
-# Test the connection immediately
-connection = connect_to_db()
-if connection and connection.is_connected():
-    st.sidebar.success("Database Connected!")
-else:
-    st.sidebar.error("Database Offline")
+if st.button("Test Connection"):
+    c = connect_to_db()
+    if c:
+        st.success("Connected to Mac Terminal MySQL!")
